@@ -1,0 +1,93 @@
+# re-create index with "fielddata": true
+PUT {{opensearch}}/my-index
+Content-Type: application/json
+
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_lc_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "classic",
+            "lowercase",
+            "cjk_bigram",
+            "my_ascii_folding"
+          ]
+        }
+      },
+      "filter": {
+        "my_ascii_folding": {
+          "type": "asciifolding",
+          "preserve_original": true
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "content": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        },
+        "term_vector": "with_positions_offsets",
+        "fielddata": true,
+        "analyzer": "my_lc_analyzer"
+      }
+    }
+  }
+}
+###
+
+# recreate index with "english" analyzer
+PUT {{opensearch}}/my-index
+Content-Type: application/json
+
+{
+  "mappings": {
+    "properties": {
+      "content": {
+        "type": "text",
+        "term_vector": "with_positions_offsets",
+        "analyzer": "english"
+      }
+    }
+  }
+}
+###
+
+# re-create index with "english" analyzer and lowercase/classic filters
+PUT {{opensearch}}/my-index
+Content-Type: application/json
+
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_analyzer": {
+          "type": "custom",
+          "tokenizer": "classic",
+          "analyzer": "english",
+          "filter": [
+            "lowercase",
+            "classic"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "content": {
+        "type": "text",
+        "term_vector": "with_positions_offsets",
+        "analyzer": "my_analyzer"
+      }
+    }
+  }
+}
+###

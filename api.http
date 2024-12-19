@@ -1,0 +1,35 @@
+# demostrate task example 1
+POST {{api}}/words/offsets
+Content-Type: application/json
+
+["hello", "simply", "print"]
+###
+
+# demonstrate task bonus request
+GET {{api}}/words/most-used-in-document/print
+###
+
+# demonstrate task bonus request (not found)
+GET {{api}}/words/most-used-in-document/notAword
+###
+
+# demostrate mix of existing and non-existing terms
+POST {{api}}/words/offsets
+Content-Type: application/json
+
+["helloWorld", "berlinjs"]
+###
+
+# demostrate ascii_folding (treats non-ASCII charater as the same)
+POST {{api}}/words/offsets
+Content-Type: application/json
+
+["didn’t", "didn't"]
+###
+
+# demostrate a mix of languages
+POST {{api}}/words/offsets
+Content-Type: application/json
+
+["hello", "日本", "הדפוס"]
+###

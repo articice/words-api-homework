@@ -1,0 +1,52 @@
+# termvectors API example
+POST /my-index/_termvectors/1
+Content-Type: application/json
+
+{
+  "fields": ["content"],
+  "term_statistics": false,
+  "field_statistics": false,
+  "offsets": true,
+  "positions": false
+}
+###
+
+# mtermvectors API example
+POST {{opensearch}}/my-index/_mtermvectors
+Content-Type: application/json
+
+{
+   "docs": [
+     {
+         "_id": "3"
+      },
+      {
+         "_id": "2"
+      },
+      {
+         "_id": "1"
+      }
+   ]
+}
+###
+
+# find documents matching many terms
+GET {{opensearch}}/my-index/_search
+Content-Type: application/json
+
+{
+  "_source": false,
+  "query": {
+    "terms_set": {
+      "content": {
+        "terms": [ "laptop", "test" ],
+        "minimum_should_match_script": {
+          "source": "1"
+        }
+      }
+    }
+  }
+}
+###
+
+

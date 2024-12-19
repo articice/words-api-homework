@@ -1,0 +1,72 @@
+# recreate index with termvectors and fielddata=true, NOTE: _doc difference
+PUT {{opensearch}}/my-index
+Content-Type: application/json
+
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "content": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "fielddata": true
+        }
+      }
+    }
+  }
+}
+###
+
+# find documents sorted by term frequency
+POST {{opensearch}}/my-index/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "term": {
+      "content": "hello"
+    }
+  },
+  "sort": [
+    {
+      "_script": {
+        "type": "number",
+        "script": {
+          "source": "doc['content'].termFreq('hello')"
+        },
+        "order": "desc"
+      }
+    }
+  ],
+  "size": 1
+}
+###
+
+#get individual document termvectors without filtering
+GET {{opensearch}}/my-index/_termvectors/1
+Content-Type: application/json
+
+{
+  "fields": ["content"],
+  "term_statistics": false,
+  "field_statistics": false,
+  "offsets": true,
+  "positions": false
+}
+###
+
+#find documents termvectors with filtering
+GET {{opensearch}}/my-index/_termvectors/1
+Content-Type: application/json
+
+{
+  "fields": ["content"],
+  "term_statistics": false,
+  "field_statistics": false,
+  "offsets": true,
+  "positions": false,
+  "filter": {
+    "terms": ["hello"]
+  }
+}
+###

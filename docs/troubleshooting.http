@@ -1,0 +1,22 @@
+# Unlock read-only indices
+PUT {{opensearch}}/_all/_settings
+Content-Type: application/json
+
+{
+  "index.blocks.read_only_allow_delete": null
+}
+###
+
+# Modify minimum storage requirements
+PUT {{opensearch}}/_cluster/settings
+Content-Type: application/json
+
+{
+  "transient": {
+    "cluster.routing.allocation.disk.watermark.low": "1gb",
+    "cluster.routing.allocation.disk.watermark.high": "512mb",
+    "cluster.routing.allocation.disk.watermark.flood_stage": "128mb",
+    "cluster.info.update.interval": "10s"
+  }
+}
+###

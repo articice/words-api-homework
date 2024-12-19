@@ -1,0 +1,41 @@
+# find documents sorted by term frequency
+POST {{opensearch}}/my-index/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "term": {
+      "content": "hello"
+    }
+  },
+  "sort": [
+    {
+      "_script": {
+        "type": "number",
+        "script": {
+          "source": "doc['content'].termFreq('hello')"
+        },
+        "order": "desc"
+      }
+    }
+  ],
+  "size": 1
+}
+###
+
+#find documents termvectors with filtering
+POST {{opensearch}}/my-index/_termvectors/1
+Content-Type: application/json
+
+{
+  "fields": ["content"],
+  "term_statistics": false,
+  "field_statistics": false,
+  "offsets": true,
+  "positions": false,
+  "filter": {
+    "terms": ["hello"]
+    }
+  }
+}
+###
